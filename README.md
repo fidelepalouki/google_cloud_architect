@@ -1,6 +1,6 @@
 # Google Cloud Architect notes from the Coursera certification
 
-### 1. [Google Cloud Platform Big Data and Machine Learning Fundamentals](1_Google_Cloud_Platform_Fundamentals__Core_Infrastructure.md)
+### 1. [Google Cloud Platform Fundamentals: Core Infrastructure](1_Google_Cloud_Platform_Fundamentals__Core_Infrastructure.md)
 
 ### 2. [Essential Cloud Infrastructure: Foundation](2_Essential_Cloud_Infrastructure__Foundation.md)
 
