@@ -75,7 +75,7 @@ sudo /opt/bitnami/ctlscript.sh restart
   - Can be used to manage resources, just like Cloud IAM, labels, tags and managed instance groups
 - IP addresses
   - Internal IP & External IP
-  - An internal DNS service the symbolic name into the Internal IP address
+  - An internal DNS service translates the symbolic name into the Internal IP address
   - DNS is scoped to the network, so it can translate Web URLs and VMs names of hosts of the same network but not hostnames from VMs in a different network
   - There is also an internal FQDN(fully qualified domain name) for an instance. It uses the format **<hostname|instancename>.c.<project_id>.internal**
   - The DNS name always points to the specific instance no matter if the instance has no longer the same internal IP address after being deleted and recreated
@@ -86,65 +86,285 @@ sudo /opt/bitnami/ctlscript.sh restart
 sudo /sbin/ifconfig
 ```
 
-```bash
+- Routes and rules
 
+  - Networks have routes that let instances in a network send traffic directly to each other
+  - A default route that directs packets to destinations that are outside the network
+  - Firewall must also allow the given packet
+  - Manually created networks don't have preconfigured firewall rules which allow all instances of the given network to talk to each other
+  - A route applies to an instance if the network and instance stacks match
+  - If the network matches and there are no instance tags specified, the route applies to all instances in that network
+  - Firewall rules protect VM instances from unapproved connections
+  - Firewall rules are applied to the network as a whole
+  - But **connections** are **allowed** or **denied** at the instance level
+  - If all firewall rules are deleted for some reason => implies deny all ingress rule & allow all egress rule for the network
+  - A firewall rule is composed of the following parameters
+    - Direction (ingress or egress)
+    - Source or Destination (source for ingress: IP addresses, source tags or a source service account) and (destination for egress: ranges of IP addresses)
+    - Protocol and Port: can be restricted for specific protocols only or combinations of protocols and ports only
+    - Action: allow or deny packets that match the _direction_, _protocol_, _port_ and _source_ or _destination_ of the rule
+    - Priority: governs the order in which rules are evaluated: the first matching rule is applied
+    - Rule assignments: All rules are assigned to all instances by default, but one can assign certain rules to certain instances only
+  - Firewall rule case: Egress => allow or deny outbound connections matching
+    - Destination CIDR ranges
+    - Protocols
+    - Ports
+  - Firewall rule case: Ingress => allow or deny inbound connections matching
+    - Source CIDR ranges
+    - Protocols
+    - Ports
+    - SourceTags on instances (for VM to VM connections only)
+
+- Billing:
+  - Ingress: no charge
+  - Egress to the same zone: no charge
+  - Egress to a different GCP service within the same region: no charge
+  - Egress to google products(youtube, maps, drive...): no charge
+  - Egress between zones in the same region: 0.01\$ per GB
+  - Egress between regions within the US: 0.1\$ per GB
+  - Egress between regions, not including traffic between US regions: At internet egress rates
+
+## Lab
+
+### Create the network topology
+
+- Default network automatically created for each GCP project with a subnet in each region
+
+#### Virtual machines diagram
+
+![](img/network-1.png)
+
+#### Routes and Firewall rules diagram
+
+![](img/network-3.png)
+
+#### Firewall rules
+
+- SSH traffic (tcp:22)
+- icmp traffic, and rdp (tcp:3389) traffic for Windows VMs
+
+```bash
+sudo apt-get install traceroute
 ```
 
 ```bash
+sudo traceroute google.com -I
+```
 
+#### Expand the address range from Cloud Shell
+
+```bash
+gcloud compute networks subnets \
+expand-ip-range new-useast \
+--prefix-length 23 \
+--region us-east1
+```
+
+### Bastion
+
+#### From the webserver
+
+```bash
+sudo apt-get update
 ```
 
 ```bash
-
+sudo apt-get install apache2 -y
 ```
 
 ```bash
+echo '<!doctype html><html><body><h1>Hello World!</h1></body></html>' | sudo tee /var/www/html/index.html
+```
 
+#### From the bastion
+
+```bash
+curl webserver
 ```
 
 ```bash
-
+ssh -a webserver
 ```
+
+Shut down the bastion host when not using it.
+
+VPN Gateway
+
+## Compute Engine
+
+### Compute
+
+Predefined or Custom Machine types:
+
+- vCPUs(cores) and Memory(RAM)
+- Persistent disks(HDD, SSD and Local SSD)
+- Networking
+- Linux or Windows
+
+* Network throughput scales at 2Gb per vCPU
+* Max throughput at 16Gb or 8vCPU
+
+- A vCPU is equal to 1 hyperthreaded core
+- 2 vCPU is equal to 1 physical core
+
+### Storage
+
+#### Persistent disks
+
+- Standard, SSD, Local SSD
+- Standard and SSD PDs scale in performance for each GB of space allocated
+- Rezize disks, migrate instances with no downtime
+- Local SSD have higher throughput and lower latency than SSD cause they are attached to the physical hardware
+
+Sustained usage automatic discounts for custom-type, predefined VMs
+
+#### VM lyfecycle
+
+![VM lyfecycle](img/lifecycle.png)
+
+### Lab
+
+- Idempotent: writtend to handle a seconde startup properly
+- SSH(Secure Shell) vs RDP(Remote Desktop Protocol)
+
+Information about unused and used memory and swap space on the custom VM
 
 ```bash
-
+free
 ```
+
+RAM
 
 ```bash
-
+nproc
 ```
+
+Number of processors
 
 ```bash
-
+nproc
 ```
+
+Details about the CPUs installed on the VM
 
 ```bash
-
+lscpu
 ```
+
+Exit
 
 ```bash
-
+exit
 ```
+
+### Compute options
+
+Machine types (4 classes)
+
+- n1-standard-vCPUs (1, 2, 4, 8, 16, 32, 64, 96)
+- n1-highmem-vCPUs (2, 4, 8, 16, 32, 64, 96)
+- n1-highcpu-vCPUs (2, 4, 8, 16, 32, 64, 96)
+- shared core (f1-micro and g1-small)
+
+Memory-optimized machine types
+
+- n1-ultramem-Mem (40, 80, 140)
+- n1-megamem-Mem (96)
+
+### Images
+
+- Boot disks can survive VM termination or deletion if "Delete book disk when instance is deleted" is disabled
+
+Persistent disks:
+
+- Network storage appearing as a block device
+
+  - can survive VM terminate
+  - attached to a VM through the network interface
+  - cannot be moved between zones
+  - bootable: you can attach a VM and boot from it
+  - snapshots: incremental backups
+
+- Features
+  - HDD(magnetic) or SSD(faster, solid-state) options
+  - disk resizing: even running and attached
+  - can be attached in readonly mode to multiple VMs (share static data between multiples instances which is cheaper than replicating data to unique disks for individual instances)
+
+Local SSD disks:
+
+- Physically attached to a VM
+- more IOPS, lower latency, higher throughput than persitant disk
+- data survives a reset, but not a VM stop or terminate
+- VM-specific: cannot be reattached to a different VM
+
+RAM disk
+
+- tmpfs
+- Faster than local disk, slower than memory
+- user when the application expects a file system structure and cannot directly store its data in memory
+- very volatile - erase on stop or restart
+- may need higher machine type (highmem ...)
+- consider using persistent disk to backup RAM disk data
+
+Summary of disk options
+![Summary of disk options](img/disk-options.png)
+
+
+### Limits on persistent disk that can be attached to a VM
+
+| Number of cores | Disk number limit |
+| --------------- | ----------------- |
+| Sharecore       | 16                |
+| 1 core          | 32                |
+| 2 - 4 cores     | 64                |
+| 8 or more cores | 128               |
+
+
+### Common actions
+
+- Moving an instance to a new zone within region:
 
 ```bash
-
+gcloud compute instances move
 ```
+
+- Moving an instance between regions:
+Manual process
+
+
+Snapshots are used in Persistent Disks for:
+- backups
+- transfer data between zones
+- transfer to different disk type
+- Snapshot is not avaiable for local SSD
+- Snapshots can be restored to a new persistent disk
+
+Snapshot disk preparation
+- Boot disk, halt the system
 
 ```bash
-
+sudo shutdown -h now
 ```
 
+- Additional disk, unmount the filesystem
 ```bash
-
+sudo unmount </mount/point>
 ```
+  If unmount is'nt possible
+  - Stop applications from writing to the persitent disk
+  - Complete pending writes and flush cache 
+   ```bash
+    sudo sync
+   ```
+  - Suspend writing to the disk device
+   ```bash
+    sudo fsfreeze -f </mount/point>
+   ```
 
-```bash
-
-```
-
-```bash
-
-```
+Resize persistent disks
+- Persistent disks can be resize without needing a snapshot
+- Can be resized even when it is attached to a VM and while it is running
+- You can grow disks, but never shrink them
 
 ```bash
 
