@@ -132,11 +132,11 @@ sudo /sbin/ifconfig
 
 #### Virtual machines diagram
 
-![](img/network-1.png)
+![](img/network-1.PNG)
 
 #### Routes and Firewall rules diagram
 
-![](img/network-3.png)
+![](img/network-3.PNG)
 
 #### Firewall rules
 
@@ -220,7 +220,7 @@ Sustained usage automatic discounts for custom-type, predefined VMs
 
 #### VM lyfecycle
 
-![VM lyfecycle](img/lifecycle.png)
+![VM lyfecycle](img/lifecycle.PNG)
 
 ### Lab
 
@@ -307,8 +307,7 @@ RAM disk
 - consider using persistent disk to backup RAM disk data
 
 Summary of disk options
-![Summary of disk options](img/disk-options.png)
-
+![Summary of disk options](img/disk-options.PNG)
 
 ### Limits on persistent disk that can be attached to a VM
 
@@ -319,7 +318,6 @@ Summary of disk options
 | 2 - 4 cores     | 64                |
 | 8 or more cores | 128               |
 
-
 ### Common actions
 
 - Moving an instance to a new zone within region:
@@ -329,10 +327,10 @@ gcloud compute instances move
 ```
 
 - Moving an instance between regions:
-Manual process
-
+  Manual process
 
 Snapshots are used in Persistent Disks for:
+
 - backups
 - transfer data between zones
 - transfer to different disk type
@@ -340,6 +338,7 @@ Snapshots are used in Persistent Disks for:
 - Snapshots can be restored to a new persistent disk
 
 Snapshot disk preparation
+
 - Boot disk, halt the system
 
 ```bash
@@ -347,21 +346,28 @@ sudo shutdown -h now
 ```
 
 - Additional disk, unmount the filesystem
+
 ```bash
 sudo unmount </mount/point>
 ```
-  If unmount is'nt possible
-  - Stop applications from writing to the persitent disk
-  - Complete pending writes and flush cache 
-   ```bash
-    sudo sync
-   ```
-  - Suspend writing to the disk device
-   ```bash
-    sudo fsfreeze -f </mount/point>
-   ```
+
+If unmount is'nt possible
+
+- Stop applications from writing to the persitent disk
+- Complete pending writes and flush cache
+
+```bash
+ sudo sync
+```
+
+- Suspend writing to the disk device
+
+```bash
+ sudo fsfreeze -f </mount/point>
+```
 
 Resize persistent disks
+
 - Persistent disks can be resize without needing a snapshot
 - Can be resized even when it is attached to a VM and while it is running
 - You can grow disks, but never shrink them

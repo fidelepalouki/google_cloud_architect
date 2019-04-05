@@ -168,17 +168,17 @@ gsutil mb -l $LOCATION gs://$DEVSHELL_PROJECT_ID
 ```
 
 ```bash
-gsutil cp gs://cloud-training/gcpfci/my-excellent-blog.png my-excellent-blog.png
+gsutil cp gs://cloud-training/gcpfci/my-excellent-blog.PNG my-excellent-blog.PNG
 ```
 
 ```bash
-gsutil cp my-excellent-blog.png gs://$DEVSHELL_PROJECT_ID/my-excellent-blog.png
+gsutil cp my-excellent-blog.PNG gs://$DEVSHELL_PROJECT_ID/my-excellent-blog.PNG
 ```
 
 #### Modify the Access Control List of the object you just created so that it is readable by everyone:
 
 ```bash
-gsutil acl ch -u allUsers:R gs://$DEVSHELL_PROJECT_ID/my-excellent-blog.png
+gsutil acl ch -u allUsers:R gs://$DEVSHELL_PROJECT_ID/my-excellent-blog.PNG
 ```
 
 #### Create Cloud Sql instance
