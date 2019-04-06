@@ -211,7 +211,7 @@ Predefined or Custom Machine types:
 
 #### Persistent disks
 
-- Standard, SSD, Local SSD
+- Standard, SSD (Solid-State Drive), Local SSD
 - Standard and SSD PDs scale in performance for each GB of space allocated
 - Rezize disks, migrate instances with no downtime
 - Local SSD have higher throughput and lower latency than SSD cause they are attached to the physical hardware
@@ -372,50 +372,182 @@ Resize persistent disks
 - Can be resized even when it is attached to a VM and while it is running
 - You can grow disks, but never shrink them
 
-```bash
+### Working with virtual machines
 
+#### SSH
+
+```bash
+sudo mkdir -p /home/minecraft
+```
+
+#### Format the disk
+
+```bash
+sudo mkfs.ext4 -F -E lazy_itable_init=0,\
+lazy_journal_init=0,discard \
+/dev/disk/by-id/google-minecraft-disk
+```
+
+#### Mount the disk
+
+```bash
+sudo mount -o discard,defaults /dev/disk/by-id/google-minecraft-disk /home/minecraft
+```
+
+#### Install and run the application
+
+```bash
+sudo apt-get update
+```
+
+#### Install the headless JRE
+
+```bash
+sudo apt-get install -y default-jre-headless
+```
+
+#### Download the Minecraft server JAR file (1.11.2 JAR)
+
+```bash
+cd /home/minecraft
 ```
 
 ```bash
+sudo wget https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar
+```
 
+#### Initialize the Minecraft server
+
+```bash
+sudo java -Xms1G -Xmx7G -d64 -jar minecraft_server.1.11.2.jar nogui
 ```
 
 ```bash
-
+sudo ls -l
 ```
 
 ```bash
+sudo nano eula.txt
+```
 
+#### Create a virtual terminal screen to start the Minecraft server
+
+```bash
+sudo apt-get install -y screen
+```
+
+#### Start the Minecraft server in a screen virtual terminal (Use the -S flag to name the terminal mcs)
+
+```bash
+sudo screen -S mcs java -Xms1G -Xmx7G -d64 -jar /home/minecraft/minecraft_server.1.11.2.jar nogui
+```
+
+#### To detach the screen terminal (The terminal continues to run in the background)
+
+```bash
+ Ctrl+A, D
+```
+
+#### To reattach the terminal
+
+```bash
+sudo screen -r mcs
+```
+
+#### To exit the ssh terminal
+
+```bash
+exit
+```
+
+#### Create firewall rule (minecraft-rule) to allow traffic to port 25565(Minecraft default server) with target tag minecraft-server
+
+#### Schedule regular backups
+
+#### Create a Cloud Storage bucket
+
+```bash
+export YOUR_BUCKET_NAME=<Enter your bucket name here>
 ```
 
 ```bash
+gsutil mb gs://$YOUR_BUCKET_NAME-minecraft-backup
+```
 
+#### Create a backup script
+
+```bash
+cd /home/minecraft
 ```
 
 ```bash
-
+sudo nano /home/minecraft/backup.sh
 ```
 
-```bash
+backup.sh
 
+```bash
+#!/bin/bash
+screen -r mcs -X stuff '/save-all\n/save-off\n'
+/usr/bin/gsutil cp -R ${BASH_SOURCE%/*}/world gs://${YOUR_BUCKET_NAME}-minecraft-backup/$(date "+%Y%m%d-%H%M%S")-world
+screen -r mcs -X stuff '/save-on\n'
 ```
 
-```bash
+#### Make sure the script is executable
 
+```bash
+sudo chmod 755 /home/minecraft/backup.sh
 ```
 
-```bash
+#### Test the backup script
 
+```bash
+. /home/minecraft/backup.sh
 ```
 
-```bash
+#### Schedule a cron job to automate the task
 
+##### Open the cron table for editing
+
+```bash
+sudo crontab -e
 ```
 
-```bash
+##### At the bottom of the cron table, paste the following line; that line instructs cron to run backups every 4 hours:
 
+```bash
+0 */4 * * * /home/minecraft/backup.sh
 ```
 
-```bash
+#### Server maintenance
 
+##### Connect via SSH to the server, stop it, and shut down the VM
+
+```bash
+sudo screen -r -X stuff '/stop\n'
+```
+
+#### Go to the console and stop the VM
+
+#### Automate server maintenance with startup and shutdown scripts
+
+##### Edit VM, for Custom Metadata add key/value
+
+- Key: `startup-script`
+- Value:
+
+```bash
+#!/bin/bash
+mount /dev/disk/by-id/google-minecraft-disk /home/minecraft
+(crontab -l ; echo "0 */4 * * * /home/minecraft/backup.sh")| crontab -
+cd /home/minecraft
+screen -d -m -S mcs java -Xms1G -Xmx7G -d64 -jar minecraft_server.1.11.2.jar nogui
+```
+
+- Key: `shutdown-script`
+- Value:
+
+```bash
+#!/bin/bash
+sudo screen -r -X stuff '/stop\n'
 ```
