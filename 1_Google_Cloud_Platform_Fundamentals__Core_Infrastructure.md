@@ -49,7 +49,7 @@ Permissions are grouped together into roles to make them easy to use and manage
 - Subnets can expand across multiple zones within a region. They have a regional scope.
 
 - Use VPC Peering to interconnect network in GCP project
-- Use Shared VPC to share network, or individual subnets, with other GCP protectsf
+- Use Shared VPC to share network, or individual subnets, with other GCP protects
 
 ### Compute Engine
 
@@ -351,7 +351,7 @@ gsutil cp gs://cloud-training/gcpfcoreinfra/mydeploy.yaml mydeploy.yaml
     metadata:
       items:
         - key: startup-script
-          value: "apt-get update"
+          value: 'apt-get update'
     disks:
       - deviceName: boot
         type: PERSISTENT
@@ -394,7 +394,7 @@ nano mydeploy.yaml
 metadata:
   items:
     - key: startup-script
-      value: "apt-get update; apt-get install nginx-light -y"
+      value: 'apt-get update; apt-get install nginx-light -y'
 ```
 
 #### Rebuild
@@ -419,16 +419,4 @@ kill %1
 
 ```bash
 bq query "select string_field_10 as request, count(*) as requestcount from logdata.accesslog group by request order by requestcount desc"
-```
-
-####
-
-```bash
-
-```
-
-####
-
-```bash
-
 ```
