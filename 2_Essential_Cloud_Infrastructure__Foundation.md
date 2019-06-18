@@ -224,7 +224,7 @@ Sustained usage automatic discounts for custom-type, predefined VMs
 
 ### Lab
 
-- Idempotent: writtend to handle a seconde startup properly
+- Idempotent: written to handle a second startup properly
 - SSH(Secure Shell) vs RDP(Remote Desktop Protocol)
 
 Information about unused and used memory and swap space on the custom VM
@@ -270,6 +270,8 @@ Memory-optimized machine types
 
 - n1-ultramem-Mem (40, 80, 140)
 - n1-megamem-Mem (96)
+
+GPU machines
 
 ### Images
 
@@ -351,7 +353,7 @@ sudo shutdown -h now
 sudo unmount </mount/point>
 ```
 
-If unmount is'nt possible
+If unmount isn't possible
 
 - Stop applications from writing to the persitent disk
 - Complete pending writes and flush cache

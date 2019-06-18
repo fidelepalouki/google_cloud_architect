@@ -1,4 +1,4 @@
-# 19/04/2019 - On demand session at Station F, Instructor: Julien Furgerot @Sfeir
+# 19/04/2019 - On demand session at Station F
 
 ### Cloud Computing
 

@@ -3,8 +3,10 @@
 ## Cloud IAM
 
 - Who - can do what - on which resource
-- Cloud IAM Objects: 
+- Cloud IAM Objects:
+
   - Organization:
+
     - Organization Owners:
       - Established at creation of the Organization by Google Sales
       - GSuite Super Admins are the only Organization Owners
@@ -13,23 +15,26 @@
       - Organization Admin
       - Viewer
       - Project Creator
-    - Beqt practice: Use Groups
+    - Best practice: Use Groups
 
   - Folders:
+
     - Roles:
       - Admin
       - Creator
       - Viewer
-  
+
   - Projects:
+
     - Creator
     - Deleter
-  
+
   - Members:
+
     - user accounts, groups
     - Service accounts:
       - User created (custom): support Cloud IAM roles only
-      - Built-in (Compute Engine and App Engine defaults service accounts): suppoert Cloud IAM roles and primitive roles
+      - Built-in (Compute Engine and App Engine defaults service accounts): support Cloud IAM roles and primitive roles
       - Google APIs service accounts (runs internal Google processes on your behalf)
     - Use scope for built-in service accounts and IAM roles for user-created ones
     - Roles for Service accounts can be assigned to groups or users
@@ -38,7 +43,8 @@
       - User managed keys
 
   - Roles
-    - Primite roles (legacy):
+
+    - Primitive roles (legacy):
       - Owner
       - Editor
       - Viewer
@@ -53,10 +59,12 @@
         - compute.instances.stop
         - ...
     - Custom roles:
+
       - custom
 
     - Product specific roles:
-      - ![Product roles](img/product-roles.png)
+      - ![Product roles](img/product-roles.PNG)
+
   - Resources
   - Products
   - G Suite Super Admins
@@ -65,10 +73,12 @@
     - Granting roles to groups instead of individuals. This allows to update group membership instead of changing a Cloud IAM policy
 
 ### Cloud Storage
+
 - Storage class can be changed form Regional to Nearline and Coldline and vice versa
 - Storage class can be changed form Multi-Regional to Nearline and Coldline and vice versa
 - Storage class can not be changed from Regional to Multi-Regional and vice versa
 - Access Control Lists and Signed urls
+
   - ACLs:
     - Scopes:
       - allUsers
@@ -93,7 +103,7 @@
     - Downgrade storage class on objects older than one year
     - Delete objects created before a specific date
     - Keep only the 3 most recent versions of an object
-    Changes to lyfecycle configurations can take 24h to apply 
+      Changes to lyfecycle configurations can take 24h to apply
   - Object versionning
   - Directory synchronization (synchronizes a VM directory with a bucket)
   - Object change notification (Pub/Sub)
@@ -154,8 +164,6 @@ cat acl.txt
 ]
 ```
 
-
-
 #### Set the access list to private and verify the results
 
 ```bash
@@ -163,7 +171,6 @@ gsutil acl set private gs://$BUCKET_NAME_1/setup.html
 gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl2.txt
 cat acl2.txt
 ```
-
 
 #### cat acl2.txt
 
@@ -234,6 +241,7 @@ Rotate CSEK keys
 #### Change encryption_key and add decryption_key1 with the old encryption_key (nano .boto)
 
 #### Rewrite the key for file 1 and comment out the old decrypt key
+
 ```md
 When a file is encrypted, rewriting the file decrypts it using the decryption_key1 that you previously set, and encrypts the file with the new encryption_key.
 
@@ -244,7 +252,8 @@ You are rewriting the key for setup2.html, but not for setup3.html, so that you 
 gsutil rewrite -k gs://$BUCKET_NAME_1/setup2.html
 ```
 
-#### Comment descryption_key1
+#### Comment decryption_key1
+
 #### Download setup2 and setup3
 
 ```bash
@@ -277,11 +286,10 @@ nano life.json
 
 ```json
 {
-  "rule":
-  [
+  "rule": [
     {
-      "action": {"type": "Delete"},
-      "condition": {"age": 31}
+      "action": { "type": "Delete" },
+      "condition": { "age": 31 }
     }
   ]
 }
@@ -380,6 +388,105 @@ gcloud auth activate-service-account --key-file credentials.json
 
 ### Cloud SQL
 
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
+
+####
+
+```bash
+
+```
+
+```bash
+
+```
 
 ####
 

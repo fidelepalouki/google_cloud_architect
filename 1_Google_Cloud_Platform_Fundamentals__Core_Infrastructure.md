@@ -254,7 +254,7 @@ kubectl run nginx --image=nginx:1.10.0
 kubectl get pods
 ```
 
-#### Expose the nginx container to the Interne
+#### Expose the nginx container to the Internet
 
 ```bash
 kubectl expose deployment nginx --port 80 --type LoadBalancer
